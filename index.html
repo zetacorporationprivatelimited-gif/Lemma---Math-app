@@ -1,0 +1,2431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Lemma — Every Great Proof Starts Here</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root{
+  --void:    #07080D;
+  --deep:    #0C0E16;
+  --well:    #11141F;
+  --surface: #161A28;
+  --rim:     #1E2235;
+  --bronze:  #B8955A;
+  --gold:    #D4AF6A;
+  --honey:   #EDD08A;
+  --cream:   #EDE8DC;
+  --parch:   #C8C0AE;
+  --stone:   #7A7567;
+  --fog:     #3D3B45;
+  --glow-a:  rgba(184,149,90,0.06);
+  --glow-b:  rgba(184,149,90,0.12);
+  --border:  rgba(184,149,90,0.10);
+  --border2: rgba(184,149,90,0.20);
+  --green:   #4CAF82;
+  --red:     #D4604A;
+  --blue:    #5B8FD4;
+  --radius:  12px;
+  --radius2: 18px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:15px}
+body{
+  background:var(--void);
+  color:var(--cream);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:300;
+  line-height:1.8;
+  overflow-x:hidden;
+  cursor:default;
+}
+
+/* ═══════════════════════════════════════════
+   MATH BACKGROUND
+═══════════════════════════════════════════ */
+#scene{
+  position:fixed;inset:0;
+  z-index:0;pointer-events:none;
+  overflow:hidden;
+}
+.sym{
+  position:absolute;
+  font-family:'Cormorant',serif;
+  color:var(--bronze);
+  opacity:0;
+  animation:floatUp linear infinite;
+  transform-origin:center;
+  user-select:none;
+  will-change:transform,opacity;
+}
+@keyframes floatUp{
+  0%  {opacity:0;transform:translateY(0) rotate(var(--r0)) scale(1)}
+  8%  {opacity:var(--op)}
+  88% {opacity:var(--op)}
+  100%{opacity:0;transform:translateY(calc(var(--travel)*-1px)) rotate(var(--r1)) scale(var(--sc))}
+}
+
+/* Grain overlay for depth */
+#grain{
+  position:fixed;inset:0;z-index:1;
+  pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:0.55;
+  mix-blend-mode:overlay;
+}
+
+/* Radial glow at center */
+#glow{
+  position:fixed;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:900px;height:900px;
+  background:radial-gradient(circle,rgba(184,149,90,0.055) 0%,transparent 65%);
+  z-index:0;pointer-events:none;
+}
+
+/* ═══════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:200;
+  height:66px;
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding:0 3rem;
+  background:rgba(7,8,13,0.75);
+  backdrop-filter:blur(28px);
+  border-bottom:1px solid var(--border);
+  transition:background .4s;
+}
+nav.scrolled{background:rgba(7,8,13,0.94)}
+.nav-brand{
+  display:flex;align-items:center;gap:11px;
+  cursor:pointer;
+}
+.brand-mark{
+  width:36px;height:36px;
+  border:1.5px solid var(--bronze);
+  border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+  background:rgba(184,149,90,0.06);
+}
+.brand-mark span{
+  font-family:'Cormorant',serif;
+  font-size:19px;font-weight:500;
+  color:var(--gold);
+  line-height:1;
+}
+.brand-name{
+  font-family:'Cormorant',serif;
+  font-size:22px;font-weight:400;
+  color:var(--cream);
+  letter-spacing:2px;
+}
+.nav-links{
+  display:flex;align-items:center;gap:2.5rem;
+  list-style:none;
+}
+.nav-links a{
+  color:var(--stone);font-size:13.5px;font-weight:400;
+  text-decoration:none;letter-spacing:0.3px;
+  transition:color .2s;
+}
+.nav-links a:hover{color:var(--parch)}
+.nav-actions{display:flex;align-items:center;gap:10px}
+.nbtn{
+  background:transparent;
+  border:1px solid var(--border2);
+  color:var(--stone);
+  padding:8px 22px;border-radius:8px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;font-weight:400;
+  cursor:pointer;transition:all .25s;
+  letter-spacing:0.2px;
+}
+.nbtn:hover{border-color:var(--bronze);color:var(--parch)}
+.nbtn.fill{
+  background:var(--bronze);
+  border-color:var(--bronze);
+  color:var(--void);font-weight:500;
+}
+.nbtn.fill:hover{background:var(--gold);border-color:var(--gold)}
+
+/* ═══════════════════════════════════════════
+   PAGE WRAPPER
+═══════════════════════════════════════════ */
+.page{position:relative;z-index:2}
+.hidden{display:none!important}
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:120px 2rem 100px;
+}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:9px;
+  border:1px solid var(--border2);
+  background:rgba(184,149,90,0.05);
+  padding:6px 18px;border-radius:100px;
+  font-family:'Fira Code',monospace;
+  font-size:11px;color:var(--gold);
+  letter-spacing:1.2px;
+  margin-bottom:2.5rem;
+  opacity:0;animation:rise .8s .1s forwards;
+}
+.hero-tag i{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);
+  animation:pulse 2.5s infinite;
+  font-style:normal;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
+.hero h1{
+  font-family:'Cormorant',serif;
+  font-size:clamp(3.4rem,7vw,6.2rem);
+  font-weight:300;line-height:1.05;
+  letter-spacing:-1px;
+  color:var(--cream);
+  max-width:860px;
+  opacity:0;animation:rise .9s .2s forwards;
+}
+.hero h1 em{
+  font-style:italic;
+  color:var(--honey);
+  font-weight:400;
+}
+.hero-sub{
+  margin-top:1.8rem;
+  color:var(--stone);font-size:16px;
+  font-weight:300;max-width:480px;line-height:1.9;
+  opacity:0;animation:rise .9s .35s forwards;
+}
+.hero-ctas{
+  margin-top:3rem;
+  display:flex;align-items:center;gap:14px;
+  opacity:0;animation:rise .9s .5s forwards;
+}
+.hbtn{
+  padding:15px 34px;border-radius:10px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px;cursor:pointer;transition:all .25s;
+  display:flex;align-items:center;gap:8px;
+}
+.hbtn.solid{
+  background:var(--bronze);border:none;
+  color:var(--void);font-weight:500;
+}
+.hbtn.solid:hover{background:var(--gold);transform:translateY(-2px)}
+.hbtn.outline{
+  background:transparent;
+  border:1px solid var(--border2);
+  color:var(--parch);font-weight:400;
+}
+.hbtn.outline:hover{border-color:var(--bronze);color:var(--honey)}
+.hero-footnote{
+  margin-top:4rem;
+  font-family:'Fira Code',monospace;
+  font-size:11.5px;color:var(--fog);
+  letter-spacing:.5px;
+  border:1px solid var(--border);
+  padding:11px 26px;border-radius:8px;
+  background:rgba(255,255,255,0.015);
+  opacity:0;animation:rise .9s .65s forwards;
+}
+.hero-footnote strong{color:var(--bronze);font-weight:400}
+
+@keyframes rise{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ═══════════════════════════════════════════
+   SECTION BASE
+═══════════════════════════════════════════ */
+.sec{
+  border-top:1px solid var(--border);
+  position:relative;z-index:2;
+}
+.wrap{max-width:1140px;margin:0 auto;padding:0 2.5rem}
+.pad{padding:110px 0}
+.sec-eyebrow{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:'Fira Code',monospace;
+  font-size:10px;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--bronze);
+  margin-bottom:1.2rem;
+}
+.sec-eyebrow::before{content:'§ ';opacity:.5}
+h2.display{
+  font-family:'Cormorant',serif;
+  font-size:clamp(2.2rem,4vw,3.4rem);
+  font-weight:300;line-height:1.15;
+  letter-spacing:-.3px;
+}
+h2.display em{font-style:italic;color:var(--honey);font-weight:400}
+
+/* scroll reveal */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .75s ease,transform .75s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* ═══════════════════════════════════════════
+   PATHS SECTION
+═══════════════════════════════════════════ */
+.paths-intro{text-align:center;margin-bottom:4.5rem}
+.paths-intro p{color:var(--stone);margin-top:.9rem;font-size:15px;font-weight:300}
+.paths-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  border:1px solid var(--border);border-radius:var(--radius2);
+  overflow:hidden;gap:1px;background:var(--border);
+}
+.pcard{
+  background:var(--void);
+  padding:3rem;
+  cursor:pointer;
+  display:flex;flex-direction:column;gap:1.1rem;
+  position:relative;overflow:hidden;
+  transition:background .3s;
+}
+.pcard::after{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:1.5px;
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .4s ease;
+}
+.pcard:hover{background:var(--deep)}
+.pcard:hover::after{transform:scaleX(1)}
+.pcard.p1::after{background:linear-gradient(90deg,var(--gold),transparent)}
+.pcard.p2::after{background:linear-gradient(90deg,#D4604A,transparent)}
+.pcard.p3::after{background:linear-gradient(90deg,#4CAF82,transparent)}
+.pcard.p4::after{background:linear-gradient(90deg,#5B8FD4,transparent)}
+.pcard-seq{
+  font-family:'Fira Code',monospace;
+  font-size:10px;letter-spacing:3px;color:var(--fog);
+}
+.pcard-glyph{
+  font-size:2.6rem;line-height:1;
+  font-family:'Cormorant',serif;
+  color:var(--gold);opacity:.7;
+}
+.pcard-title{
+  font-family:'Cormorant',serif;
+  font-size:1.65rem;font-weight:400;
+  color:var(--cream);line-height:1.2;
+}
+.pcard-body{
+  color:var(--stone);font-size:13.5px;
+  font-weight:300;line-height:1.85;
+}
+.pcard-pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{
+  font-size:10.5px;
+  padding:3px 11px;border-radius:100px;
+  border:1px solid var(--border2);
+  background:rgba(255,255,255,0.025);
+  color:var(--stone);letter-spacing:.3px;
+}
+.pcard-cta{
+  margin-top:auto;
+  display:flex;align-items:center;gap:7px;
+  font-family:'Fira Code',monospace;
+  font-size:11.5px;color:var(--fog);
+  transition:all .3s;
+}
+.pcard:hover .pcard-cta{color:var(--honey);gap:12px}
+
+/* ═══════════════════════════════════════════
+   FEATURES
+═══════════════════════════════════════════ */
+.feat-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);
+  border-radius:var(--radius2);overflow:hidden;
+}
+.fcard{
+  background:var(--void);
+  padding:2.2rem 2rem;transition:background .25s;
+}
+.fcard:hover{background:var(--deep)}
+.fcard-ico{
+  width:42px;height:42px;
+  border-radius:11px;
+  border:1px solid var(--border2);
+  background:var(--glow-a);
+  display:flex;align-items:center;justify-content:center;
+  font-size:19px;margin-bottom:1.3rem;
+}
+.fcard h3{
+  font-family:'Cormorant',serif;
+  font-size:1.2rem;font-weight:500;
+  color:var(--cream);margin-bottom:.55rem;
+  letter-spacing:.2px;
+}
+.fcard p{font-size:13px;color:var(--stone);font-weight:300;line-height:1.8}
+
+/* ═══════════════════════════════════════════
+   TEACHERS SECTION (landing)
+═══════════════════════════════════════════ */
+.teach-landing{
+  background:var(--deep);
+  border-top:1px solid var(--border);
+  padding:110px 0;
+}
+.teach-landing-inner{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:5rem;align-items:center;
+}
+.tl-text h2.display{margin-bottom:1rem}
+.tl-text p{color:var(--stone);font-weight:300;font-size:15px;line-height:1.9;margin-bottom:2rem}
+.tl-stats{display:flex;gap:3rem;margin-bottom:2.5rem}
+.tl-stat-n{
+  font-family:'Cormorant',serif;
+  font-size:2.4rem;font-weight:400;color:var(--honey);
+}
+.tl-stat-l{font-size:12px;color:var(--stone);margin-top:3px}
+.teacher-cards-mini{display:flex;flex-direction:column;gap:12px}
+.tcm{
+  background:var(--void);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.2rem 1.4rem;
+  display:flex;align-items:center;gap:14px;
+  transition:border-color .25s;
+}
+.tcm:hover{border-color:var(--bronze)}
+.tcm-av{
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant',serif;font-size:16px;font-weight:500;
+  color:var(--void);flex-shrink:0;
+}
+.tcm-name{font-size:14px;font-weight:500;color:var(--cream)}
+.tcm-sub{font-size:11.5px;color:var(--stone);margin-top:2px}
+.tcm-right{margin-left:auto;text-align:right}
+.tcm-rate{
+  font-family:'Fira Code',monospace;
+  font-size:12px;color:var(--gold);
+}
+.tcm-stars{font-size:11px;color:var(--bronze);margin-top:2px}
+
+/* ═══════════════════════════════════════════
+   BOARDS
+═══════════════════════════════════════════ */
+.boards-sec{padding:60px 0;border-top:1px solid var(--border)}
+.boards-top{
+  text-align:center;
+  font-family:'Fira Code',monospace;
+  font-size:10px;letter-spacing:3px;
+  color:var(--fog);text-transform:uppercase;
+  margin-bottom:2rem;
+}
+.boards-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.bchip{
+  background:var(--deep);
+  border:1px solid var(--border);
+  color:var(--stone);
+  padding:7px 18px;border-radius:100px;
+  font-size:12.5px;font-weight:300;
+  transition:all .22s;cursor:default;
+}
+.bchip:hover{border-color:var(--bronze);color:var(--honey);background:rgba(184,149,90,0.05)}
+
+/* ═══════════════════════════════════════════
+   CTA & FOOTER
+═══════════════════════════════════════════ */
+.cta-sec{padding:130px 0;text-align:center;border-top:1px solid var(--border)}
+.cta-sec h2.display{margin-bottom:1rem}
+.cta-sec .sub{
+  color:var(--stone);font-weight:300;
+  margin-bottom:2.8rem;font-size:16px;
+}
+.cta-qed{
+  margin-top:3rem;
+  font-family:'Fira Code',monospace;
+  font-size:11px;color:var(--fog);letter-spacing:.5px;
+}
+.cta-qed strong{color:var(--bronze);font-weight:400}
+
+footer{
+  border-top:1px solid var(--border);
+  padding:2.5rem;text-align:center;
+  color:var(--fog);font-size:12px;
+}
+footer .flogo{
+  display:flex;align-items:center;justify-content:center;
+  gap:8px;margin-bottom:.8rem;
+}
+
+/* ═══════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════ */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(4,5,9,0.82);
+  backdrop-filter:blur(16px);
+  z-index:500;
+  align-items:center;justify-content:center;
+}
+.overlay.open{display:flex}
+.modal{
+  background:var(--deep);
+  border:1px solid var(--border2);
+  border-radius:20px;
+  width:100%;max-width:440px;
+  padding:2.6rem;position:relative;
+  animation:mshow .25s ease both;
+}
+@keyframes mshow{
+  from{opacity:0;transform:scale(.96) translateY(14px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+.mclose{
+  position:absolute;top:1.2rem;right:1.2rem;
+  background:transparent;border:none;
+  color:var(--stone);font-size:15px;cursor:pointer;
+  width:30px;height:30px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:6px;transition:all .2s;
+}
+.mclose:hover{background:var(--surface);color:var(--cream)}
+.modal-brand{display:flex;align-items:center;gap:9px;margin-bottom:1.7rem}
+.modal h3{
+  font-family:'Cormorant',serif;
+  font-size:1.7rem;font-weight:400;
+  color:var(--cream);margin-bottom:.3rem;
+  letter-spacing:.3px;
+}
+.modal .msub{font-size:13px;color:var(--stone);font-weight:300;margin-bottom:1.8rem}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.6rem}
+.role-card{
+  background:var(--well);border:1px solid var(--border);
+  border-radius:11px;padding:16px;
+  cursor:pointer;text-align:center;transition:all .22s;
+}
+.role-card:hover,.role-card.active{
+  border-color:var(--bronze);background:var(--glow-b);
+}
+.role-emoji{font-size:24px;display:block;margin-bottom:6px}
+.role-title{font-size:13.5px;font-weight:500;color:var(--cream)}
+.role-note{font-size:11px;color:var(--stone);margin-top:3px}
+/* form */
+.fg{margin-bottom:1.1rem}
+.fl{
+  display:block;font-family:'Fira Code',monospace;
+  font-size:10px;color:var(--stone);
+  margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase;
+}
+.fi{
+  width:100%;background:var(--void);
+  border:1px solid var(--border2);border-radius:9px;
+  padding:11px 15px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px;color:var(--cream);
+  outline:none;transition:border-color .2s;
+}
+.fi:focus{border-color:var(--bronze)}
+.fi::placeholder{color:var(--fog)}
+.fbtn{
+  width:100%;background:var(--bronze);border:none;
+  color:var(--void);padding:13px;border-radius:11px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px;font-weight:500;
+  cursor:pointer;transition:all .2s;margin-top:.4rem;
+}
+.fbtn:hover{background:var(--gold)}
+.msep{display:flex;align-items:center;gap:12px;margin:1.4rem 0;color:var(--fog);font-size:11px}
+.msep::before,.msep::after{content:'';flex:1;height:1px;background:var(--border)}
+.mbtn-goo{
+  width:100%;background:transparent;
+  border:1px solid var(--border);
+  color:var(--stone);padding:11px;border-radius:11px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  transition:all .2s;
+}
+.mbtn-goo:hover{border-color:var(--bronze);color:var(--parch)}
+.mswitch{
+  text-align:center;margin-top:1.2rem;
+  font-size:12.5px;color:var(--stone);
+}
+.mswitch a{color:var(--gold);cursor:pointer;text-decoration:none}
+.mswitch a:hover{text-decoration:underline}
+
+/* assessment modal */
+.modal.wide{max-width:530px}
+.assess-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1.4rem;
+}
+.assess-dots{display:flex;gap:5px}
+.adot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--surface);border:1px solid var(--border2);
+  transition:all .3s;
+}
+.adot.cur{background:var(--gold);border-color:var(--gold)}
+.adot.done{background:var(--green);border-color:var(--green)}
+.alevel-badge{
+  display:inline-flex;margin-bottom:.9rem;
+  font-family:'Fira Code',monospace;
+  font-size:10px;letter-spacing:1.5px;
+  text-transform:uppercase;
+  padding:4px 12px;border-radius:100px;
+  border:1px solid rgba(184,149,90,.3);
+  color:var(--honey);background:rgba(184,149,90,.07);
+}
+.aq{
+  font-family:'Cormorant',serif;
+  font-size:1.35rem;font-weight:400;
+  color:var(--cream);line-height:1.5;margin-bottom:1.5rem;
+}
+.aopts{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:1.6rem}
+.aopt{
+  display:flex;align-items:center;gap:11px;
+  padding:12px 15px;
+  background:var(--well);border:1px solid var(--border);
+  border-radius:10px;cursor:pointer;
+  font-size:13.5px;color:var(--cream);transition:all .18s;
+}
+.aopt:hover{border-color:rgba(184,149,90,.35);background:var(--glow-a)}
+.aopt.sel{border-color:var(--bronze);background:var(--glow-b);color:var(--honey)}
+.aopt.ok{border-color:var(--green);background:rgba(76,175,130,.07);color:#A7F3D0}
+.aopt.ng{border-color:var(--red);background:rgba(212,96,74,.07);color:#FCBDAF}
+.akey{
+  width:24px;height:24px;border-radius:6px;
+  background:var(--void);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fira Code',monospace;font-size:10px;
+  color:var(--stone);flex-shrink:0;
+}
+
+/* ═══════════════════════════════════════════
+   STUDENT DASHBOARD
+═══════════════════════════════════════════ */
+.app-shell{
+  display:flex;min-height:100vh;
+  background:var(--void);position:relative;z-index:2;
+}
+.sidebar{
+  width:240px;flex-shrink:0;
+  background:var(--deep);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  padding:0;
+  position:fixed;top:0;left:0;bottom:0;
+  z-index:150;
+  transition:transform .3s;
+}
+.sb-brand{
+  padding:1.5rem 1.6rem;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.sb-brand .brand-name{font-size:19px}
+.sb-nav{
+  flex:1;padding:1rem 0;overflow-y:auto;
+}
+.sb-section{
+  padding:.4rem 1.2rem .2rem;
+  font-family:'Fira Code',monospace;
+  font-size:9px;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--fog);
+  margin-top:.5rem;
+}
+.sb-item{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 1.6rem;
+  color:var(--stone);font-size:13.5px;font-weight:400;
+  cursor:pointer;transition:all .2s;
+  border-left:2px solid transparent;
+  user-select:none;
+}
+.sb-item:hover{color:var(--parch);background:rgba(184,149,90,.04)}
+.sb-item.active{
+  color:var(--honey);
+  border-left-color:var(--bronze);
+  background:rgba(184,149,90,.07);
+}
+.sb-item .ico{font-size:16px;width:20px;text-align:center}
+.sb-bottom{
+  padding:1.2rem 1.6rem;
+  border-top:1px solid var(--border);
+}
+.sb-user{display:flex;align-items:center;gap:10px}
+.sb-av{
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,var(--bronze),var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant',serif;font-size:14px;font-weight:500;
+  color:var(--void);flex-shrink:0;
+}
+.sb-uname{font-size:13.5px;font-weight:500;color:var(--cream)}
+.sb-urole{font-size:10.5px;color:var(--stone);margin-top:1px}
+.sb-logout{
+  margin-left:auto;background:none;border:none;
+  color:var(--stone);cursor:pointer;font-size:14px;
+  transition:color .2s;
+}
+.sb-logout:hover{color:var(--red)}
+
+/* main content */
+.main{
+  margin-left:240px;flex:1;
+  padding:2.5rem 2.8rem;
+  min-height:100vh;
+}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:2.5rem;
+}
+.topbar-title{
+  font-family:'Cormorant',serif;
+  font-size:1.8rem;font-weight:400;
+  color:var(--cream);letter-spacing:.3px;
+}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.notif-btn{
+  width:36px;height:36px;
+  background:var(--deep);border:1px solid var(--border);
+  border-radius:9px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;transition:all .2s;position:relative;
+}
+.notif-btn:hover{border-color:var(--bronze)}
+.notif-dot{
+  position:absolute;top:6px;right:7px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--red);
+  border:1.5px solid var(--deep);
+}
+.dash-av{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--bronze),var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant',serif;font-size:15px;
+  color:var(--void);cursor:pointer;
+}
+
+/* stat cards row */
+.stat-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:14px;margin-bottom:2rem;
+}
+.scard{
+  background:var(--deep);
+  border:1px solid var(--border);
+  border-radius:var(--radius2);
+  padding:1.4rem 1.5rem;
+  position:relative;overflow:hidden;
+  transition:border-color .25s;
+}
+.scard:hover{border-color:var(--border2)}
+.scard::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:1px;
+}
+.scard.s1::before{background:linear-gradient(90deg,var(--gold),transparent)}
+.scard.s2::before{background:linear-gradient(90deg,var(--green),transparent)}
+.scard.s3::before{background:linear-gradient(90deg,var(--blue),transparent)}
+.scard.s4::before{background:linear-gradient(90deg,var(--red),transparent)}
+.scard-label{
+  font-family:'Fira Code',monospace;
+  font-size:9.5px;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--stone);
+  margin-bottom:.7rem;
+}
+.scard-n{
+  font-family:'Cormorant',serif;
+  font-size:2.2rem;font-weight:400;
+  line-height:1;
+}
+.scard.s1 .scard-n{color:var(--honey)}
+.scard.s2 .scard-n{color:var(--green)}
+.scard.s3 .scard-n{color:var(--blue)}
+.scard.s4 .scard-n{color:#E8A090}
+.scard-sub{font-size:12px;color:var(--stone);margin-top:.5rem;font-weight:300}
+
+/* two column layout inside dashboard */
+.dash-cols{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-bottom:18px}
+.dash-full{margin-bottom:18px}
+
+/* panel */
+.panel{
+  background:var(--deep);
+  border:1px solid var(--border);
+  border-radius:var(--radius2);
+  overflow:hidden;
+}
+.panel-head{
+  padding:1.1rem 1.5rem;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.panel-title{
+  font-family:'Cormorant',serif;
+  font-size:1.05rem;font-weight:500;
+  color:var(--cream);letter-spacing:.3px;
+}
+.panel-action{
+  font-family:'Fira Code',monospace;
+  font-size:10px;color:var(--bronze);
+  cursor:pointer;letter-spacing:.5px;
+  background:none;border:none;transition:color .2s;
+}
+.panel-action:hover{color:var(--honey)}
+.panel-body{padding:1.4rem 1.5rem}
+
+/* XP bar */
+.xp-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.xp-level{font-size:13px;font-weight:500;color:var(--cream)}
+.xp-pts{
+  font-family:'Fira Code',monospace;
+  font-size:11px;color:var(--stone);
+}
+.xp-track{height:6px;background:var(--surface);border-radius:100px;overflow:hidden;margin-bottom:1.5rem}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--bronze),var(--honey));border-radius:100px;transition:width 1.8s ease}
+
+/* today's task card */
+.task-card{
+  background:var(--void);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.2rem 1.4rem;
+  display:flex;align-items:flex-start;gap:14px;
+}
+.task-ico{
+  width:40px;height:40px;
+  border-radius:10px;
+  background:rgba(184,149,90,.1);
+  border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.task-title{font-size:14px;font-weight:500;color:var(--cream)}
+.task-meta{font-size:12px;color:var(--stone);font-weight:300;margin:.3rem 0 .8rem}
+.task-btn{
+  padding:7px 18px;border-radius:8px;
+  background:var(--bronze);border:none;
+  color:var(--void);font-size:12px;font-weight:500;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  cursor:pointer;transition:all .2s;
+}
+.task-btn:hover{background:var(--gold)}
+
+/* topic mastery */
+.topic-list{display:flex;flex-direction:column;gap:1rem}
+.titem{display:flex;align-items:center;justify-content:space-between}
+.tname{font-size:13.5px;color:var(--parch);font-weight:400;min-width:90px}
+.tprog{flex:1;margin:0 14px;height:4px;background:var(--surface);border-radius:100px;overflow:hidden}
+.tprog-f{height:100%;border-radius:100px}
+.tpct{
+  font-family:'Fira Code',monospace;
+  font-size:11px;color:var(--stone);min-width:28px;text-align:right;
+}
+
+/* leaderboard */
+.lb-list{display:flex;flex-direction:column;gap:0}
+.lb-item{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 0;
+  border-bottom:1px solid var(--border);
+}
+.lb-item:last-child{border-bottom:none}
+.lb-rank{
+  font-family:'Fira Code',monospace;
+  font-size:11px;color:var(--fog);
+  width:18px;text-align:center;
+}
+.lb-av{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant',serif;font-size:13px;
+  color:var(--void);flex-shrink:0;
+}
+.lb-name{font-size:13px;color:var(--cream);flex:1}
+.lb-xp{
+  font-family:'Fira Code',monospace;
+  font-size:11px;color:var(--bronze);
+}
+.lb-you{
+  font-family:'Fira Code',monospace;
+  font-size:9px;color:var(--green);
+  background:rgba(76,175,130,.1);
+  border:1px solid rgba(76,175,130,.2);
+  padding:2px 7px;border-radius:100px;
+}
+
+/* recent sessions */
+.session-list{display:flex;flex-direction:column;gap:10px}
+.sess-card{
+  background:var(--void);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.1rem 1.3rem;
+  display:flex;align-items:center;gap:13px;
+  transition:border-color .22s;cursor:pointer;
+}
+.sess-card:hover{border-color:var(--bronze)}
+.sess-av{
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant',serif;font-size:15px;
+  color:var(--void);flex-shrink:0;
+}
+.sess-name{font-size:13.5px;font-weight:500;color:var(--cream)}
+.sess-sub{font-size:12px;color:var(--stone);margin-top:2px}
+.sess-right{margin-left:auto;text-align:right}
+.sess-time{font-family:'Fira Code',monospace;font-size:11px;color:var(--stone)}
+.sess-badge{
+  display:inline-block;margin-top:4px;
+  font-size:10px;padding:2px 9px;border-radius:100px;
+  font-family:'Fira Code',monospace;
+}
+.sess-badge.upcoming{
+  background:rgba(91,143,212,.1);
+  border:1px solid rgba(91,143,212,.25);
+  color:var(--blue);
+}
+.sess-badge.done{
+  background:rgba(76,175,130,.08);
+  border:1px solid rgba(76,175,130,.2);
+  color:var(--green);
+}
+
+/* ai tutor panel */
+.ai-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--glow-a);
+  border:1px solid var(--border2);
+  padding:5px 13px;border-radius:100px;
+  font-family:'Fira Code',monospace;
+  font-size:10px;color:var(--bronze);
+  letter-spacing:.5px;
+  margin-bottom:1.2rem;
+}
+.ai-chip::before{content:'◆';font-size:8px}
+.tutor-prompt{
+  width:100%;background:var(--void);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:12px 15px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13.5px;color:var(--cream);
+  resize:none;outline:none;
+  transition:border-color .2s;
+  min-height:80px;
+  line-height:1.7;
+}
+.tutor-prompt:focus{border-color:var(--bronze)}
+.tutor-prompt::placeholder{color:var(--fog)}
+.tutor-actions{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:10px;
+}
+.tutor-hint{font-size:11.5px;color:var(--fog);font-weight:300}
+.tutor-send{
+  padding:8px 20px;border-radius:8px;
+  background:var(--bronze);border:none;
+  color:var(--void);font-size:13px;font-weight:500;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  cursor:pointer;transition:all .2s;
+}
+.tutor-send:hover{background:var(--gold)}
+
+/* streak heatmap */
+.heatmap{display:flex;gap:3px;flex-wrap:wrap}
+.hm-day{
+  width:12px;height:12px;border-radius:3px;
+  background:var(--surface);transition:transform .15s;
+  cursor:default;
+}
+.hm-day:hover{transform:scale(1.3)}
+.hm-day.l1{background:rgba(184,149,90,.2)}
+.hm-day.l2{background:rgba(184,149,90,.4)}
+.hm-day.l3{background:rgba(184,149,90,.65)}
+.hm-day.l4{background:var(--gold)}
+
+/* ═══════════════════════════════════════════
+   TEACHER DASHBOARD
+═══════════════════════════════════════════ */
+/* reuses same sidebar + panel system */
+.req-card{
+  background:var(--void);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1.2rem 1.4rem;
+  display:flex;align-items:center;gap:14px;
+  transition:border-color .22s;
+}
+.req-card:hover{border-color:var(--border2)}
+.req-av{
+  width:42px;height:42px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant',serif;font-size:17px;
+  color:var(--void);flex-shrink:0;
+}
+.req-name{font-size:14px;font-weight:500;color:var(--cream)}
+.req-info{font-size:12px;color:var(--stone);margin:.25rem 0}
+.req-topic{
+  display:inline-flex;
+  font-size:10.5px;padding:2px 10px;border-radius:100px;
+  background:var(--glow-a);border:1px solid var(--border2);
+  color:var(--bronze);
+}
+.req-actions{margin-left:auto;display:flex;gap:8px;flex-shrink:0}
+.req-accept{
+  padding:7px 16px;border-radius:8px;
+  background:rgba(76,175,130,.15);
+  border:1px solid rgba(76,175,130,.3);
+  color:var(--green);font-size:12px;font-weight:500;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  cursor:pointer;transition:all .2s;
+}
+.req-accept:hover{background:rgba(76,175,130,.25)}
+.req-decline{
+  padding:7px 16px;border-radius:8px;
+  background:rgba(212,96,74,.1);
+  border:1px solid rgba(212,96,74,.25);
+  color:var(--red);font-size:12px;font-weight:500;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  cursor:pointer;transition:all .2s;
+}
+.req-decline:hover{background:rgba(212,96,74,.2)}
+.req-list{display:flex;flex-direction:column;gap:10px}
+
+/* earnings chart (simple bars) */
+.earn-chart{display:flex;align-items:flex-end;gap:8px;height:90px;margin:1rem 0}
+.earn-bar{
+  flex:1;border-radius:4px 4px 0 0;
+  background:linear-gradient(180deg,var(--bronze),rgba(184,149,90,.3));
+  transition:all .3s;cursor:default;
+  position:relative;
+}
+.earn-bar:hover{filter:brightness(1.2)}
+.earn-labels{display:flex;gap:8px}
+.earn-lbl{flex:1;text-align:center;font-family:'Fira Code',monospace;font-size:9px;color:var(--fog)}
+.earn-total{
+  font-family:'Cormorant',serif;
+  font-size:2.5rem;font-weight:400;color:var(--honey);
+  margin-bottom:.3rem;
+}
+.earn-period{font-family:'Fira Code',monospace;font-size:10px;color:var(--stone);letter-spacing:1px}
+
+/* active students list */
+.stu-list{display:flex;flex-direction:column;gap:0}
+.stu-row{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 0;border-bottom:1px solid var(--border);
+}
+.stu-row:last-child{border-bottom:none}
+.stu-av{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant',serif;font-size:13px;
+  color:var(--void);flex-shrink:0;
+}
+.stu-name{font-size:13px;color:var(--cream);font-weight:400;flex:1}
+.stu-prog{font-size:11.5px;color:var(--stone)}
+.stu-lvl{
+  font-family:'Fira Code',monospace;
+  font-size:10px;color:var(--bronze);
+}
+.online-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--green);flex-shrink:0;
+}
+
+/* calendar/schedule */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:1rem}
+.cal-day{
+  background:var(--surface);
+  border-radius:8px;padding:8px 6px;
+  text-align:center;
+}
+.cal-day-name{font-family:'Fira Code',monospace;font-size:9px;color:var(--fog);letter-spacing:1px;margin-bottom:5px}
+.cal-day-n{
+  font-family:'Cormorant',serif;
+  font-size:1.1rem;font-weight:400;color:var(--parch);
+}
+.cal-day.has-event{
+  background:var(--glow-b);border:1px solid var(--border2);
+}
+.cal-day.has-event .cal-day-n{color:var(--honey)}
+.cal-day.today{
+  background:rgba(184,149,90,.15);border:1px solid var(--bronze);
+}
+.cal-day.today .cal-day-n{color:var(--gold)}
+.event-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--bronze);margin:.4rem auto 0;
+}
+.upcomings{display:flex;flex-direction:column;gap:8px}
+.upcoming-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;
+  background:var(--void);border:1px solid var(--border);
+  border-radius:9px;
+}
+.upcoming-time{
+  font-family:'Fira Code',monospace;
+  font-size:11px;color:var(--bronze);
+  white-space:nowrap;min-width:50px;
+}
+.upcoming-name{font-size:13px;color:var(--cream)}
+.upcoming-topic{font-size:11.5px;color:var(--stone);margin-top:2px}
+.status-online{
+  margin-left:auto;
+  display:flex;align-items:center;gap:5px;
+  font-family:'Fira Code',monospace;
+  font-size:10px;color:var(--green);
+}
+.status-online::before{
+  content:'';width:6px;height:6px;
+  border-radius:50%;background:var(--green);
+}
+/* availability toggle */
+.avail-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 1.5rem;
+  background:var(--deep);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin-bottom:1.5rem;
+}
+.avail-label{font-size:14px;font-weight:500;color:var(--cream)}
+.avail-sub{font-size:12px;color:var(--stone);margin-top:2px}
+.toggle{
+  width:44px;height:24px;
+  border-radius:100px;
+  background:var(--surface);
+  border:1px solid var(--border2);
+  position:relative;cursor:pointer;
+  transition:background .25s;
+  flex-shrink:0;
+}
+.toggle.on{background:var(--green);border-color:var(--green)}
+.toggle::after{
+  content:'';
+  position:absolute;top:3px;left:3px;
+  width:16px;height:16px;border-radius:50%;
+  background:var(--stone);transition:all .25s;
+}
+.toggle.on::after{left:23px;background:#fff}
+.review-list{display:flex;flex-direction:column;gap:10px}
+.review-item{
+  background:var(--void);border:1px solid var(--border);
+  border-radius:var(--radius);padding:1rem 1.2rem;
+}
+.review-stars{color:var(--gold);font-size:12px;margin-bottom:.4rem}
+.review-text{font-size:13px;color:var(--stone);font-weight:300;line-height:1.7;margin-bottom:.5rem}
+.review-by{font-family:'Fira Code',monospace;font-size:10px;color:var(--fog);letter-spacing:.5px}
+
+/* responsive */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .main{margin-left:0}
+  .stat-row{grid-template-columns:repeat(2,1fr)}
+  .dash-cols{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .paths-grid,.feat-grid{grid-template-columns:1fr}
+  .teach-landing-inner{grid-template-columns:1fr}
+  .hero-ctas{flex-direction:column;align-items:stretch;text-align:center}
+  .hbtn{justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<!-- MATH SYMBOLS SCENE -->
+<div id="scene"></div>
+<div id="grain"></div>
+<div id="glow"></div>
+
+<!-- ═══════════════════════════════════════════
+     NAV
+═══════════════════════════════════════════ -->
+<nav id="navbar">
+  <div class="nav-brand" onclick="showPage('landing')">
+    <div class="brand-mark"><span>L</span></div>
+    <span class="brand-name">Lemma</span>
+  </div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#paths">Paths</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#teachers">Teachers</a></li>
+    <li><a href="#boards">Boards</a></li>
+  </ul>
+  <div class="nav-actions" id="navActions">
+    <button class="nbtn" onclick="openModal('auth')">Log In</button>
+    <button class="nbtn fill" onclick="openModal('assess')">Start Free</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     LANDING PAGE
+═══════════════════════════════════════════ -->
+<div id="landingPage" class="page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag"><i></i> AI POWERED MATHEMATICS PLATFORM</div>
+    <h1>Every great proof<br/>begins with a <em>Lemma</em></h1>
+    <p class="hero-sub">Four adaptive learning paths. Real time AI mentorship. A global teacher marketplace. Your personalised XP journey starts here.</p>
+    <div class="hero-ctas">
+      <button class="hbtn solid" onclick="openModal('assess')">Take the Placement Test ↗</button>
+      <button class="hbtn outline" onclick="document.getElementById('paths').scrollIntoView({behavior:'smooth'})">Explore Paths</button>
+    </div>
+    <div class="hero-footnote">
+      <strong>Lemma</strong> &nbsp;(n.) A proven truth used to establish a greater theorem. Mathematics builds on itself.
+    </div>
+  </section>
+
+  <!-- PATHS -->
+  <section class="sec" id="paths">
+    <div class="wrap pad">
+      <div class="paths-intro reveal">
+        <div class="sec-eyebrow">Four Paths</div>
+        <h2 class="display">One platform.<br/>Every kind of <em>mathematics learner</em>.</h2>
+        <p>A short placement assessment maps your level. Lemma builds the path forward.</p>
+      </div>
+      <div class="paths-grid reveal">
+        <div class="pcard p1" onclick="openModal('assess')">
+          <div class="pcard-seq">01 &mdash; EXPLORE</div>
+          <div class="pcard-glyph">∮</div>
+          <div class="pcard-title">Explore a Topic</div>
+          <p class="pcard-body">Curious about combinatorics, number theory or Fourier series? Dive into any topic and let AI guide you through it at your own depth and pace.</p>
+          <div class="pcard-pills">
+            <span class="pill">Self Directed</span>
+            <span class="pill">All Levels</span>
+            <span class="pill">AI Guided</span>
+          </div>
+          <div class="pcard-cta">Begin exploring <span>→</span></div>
+        </div>
+        <div class="pcard p2" onclick="openModal('assess')">
+          <div class="pcard-seq">02 &mdash; COMPETE</div>
+          <div class="pcard-glyph">∑</div>
+          <div class="pcard-title">Olympiad Training</div>
+          <p class="pcard-body">Train for IMO, AMC, IOQM and RMO. Hard problems, proof techniques and competition simulations built for students who want to reach the top.</p>
+          <div class="pcard-pills">
+            <span class="pill">IMO &middot; RMO &middot; AMC</span>
+            <span class="pill">Hard Problems</span>
+            <span class="pill">Leaderboard</span>
+          </div>
+          <div class="pcard-cta">Start training <span>→</span></div>
+        </div>
+        <div class="pcard p3" onclick="openModal('assess')">
+          <div class="pcard-seq">03 &mdash; FOUNDATIONS</div>
+          <div class="pcard-glyph">√</div>
+          <div class="pcard-title">From the Beginning</div>
+          <p class="pcard-body">Starting from zero? We begin with counting and build everything. Structured, patient, visual and always encouraging. No judgment, only growth.</p>
+          <div class="pcard-pills">
+            <span class="pill">Foundations</span>
+            <span class="pill">Step by Step</span>
+            <span class="pill">Visual</span>
+          </div>
+          <div class="pcard-cta">Begin the journey <span>→</span></div>
+        </div>
+        <div class="pcard p4" onclick="openModal('assess')">
+          <div class="pcard-seq">04 &mdash; SCHOOL</div>
+          <div class="pcard-glyph">∂</div>
+          <div class="pcard-title">School Syllabus</div>
+          <p class="pcard-body">Chapter by chapter alignment with CBSE, ICSE, IB, JK Board, State Boards and US curricula. Exactly what you need for exams, with instant AI feedback.</p>
+          <div class="pcard-pills">
+            <span class="pill">CBSE &middot; ICSE &middot; IB</span>
+            <span class="pill">JK Board</span>
+            <span class="pill">US Boards</span>
+          </div>
+          <div class="pcard-cta">Follow your syllabus <span>→</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="sec" id="features">
+    <div class="wrap pad">
+      <div style="margin-bottom:3.5rem" class="reveal">
+        <div class="sec-eyebrow">Everything Included</div>
+        <h2 class="display">Built to keep students<br/><em>engaged and progressing</em></h2>
+      </div>
+      <div class="feat-grid reveal">
+        <div class="fcard">
+          <div class="fcard-ico">⚡</div>
+          <h3>Level Diagnostic</h3>
+          <p>An adaptive MCQ test at the start. Basic, moderate and advanced questions. Lemma reads your level instantly and personalises everything from the first session.</p>
+        </div>
+        <div class="fcard">
+          <div class="fcard-ico">🎮</div>
+          <h3>XP and Streaks</h3>
+          <p>Earn XP for every problem solved. Build daily streaks. Unlock named levels and badges. Your mathematics journey has the pull of a game without losing rigour.</p>
+        </div>
+        <div class="fcard">
+          <div class="fcard-ico">🤖</div>
+          <h3>AI Tutor, Free</h3>
+          <p>Stuck on a problem? The AI tutor walks you through it step by step. It teaches the reasoning, not just the answer, and generates unlimited practice problems on demand.</p>
+        </div>
+        <div class="fcard">
+          <div class="fcard-ico">📊</div>
+          <h3>Mastery Dashboard</h3>
+          <p>Topic by topic visual mastery tracking. Weekly activity heatmaps and growth graphs. Know exactly what you have conquered and what still needs attention.</p>
+        </div>
+        <div class="fcard">
+          <div class="fcard-ico">👨‍🏫</div>
+          <h3>Real Teacher Connect</h3>
+          <p>When AI is not enough, one tap connects you with a verified human teacher. Live sessions, doubt clearing and personal mentorship on demand. Pay only when you book.</p>
+        </div>
+        <div class="fcard">
+          <div class="fcard-ico">🏆</div>
+          <h3>Global Leaderboard</h3>
+          <p>See your rank among students worldwide and within your school. Healthy competition that turns studying into something students actually want to do every day.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEACHERS (landing view) -->
+  <section class="teach-landing" id="teachers">
+    <div class="wrap">
+      <div class="teach-landing-inner">
+        <div class="tl-text reveal">
+          <div class="sec-eyebrow">Expert Teachers</div>
+          <h2 class="display">When AI is not enough,<br/>a real teacher is <em>one tap away</em></h2>
+          <p>Verified mathematics educators set their own rates and schedules. Students book on demand. Teachers earn. We handle the platform, payments and scheduling.</p>
+          <div class="tl-stats">
+            <div>
+              <div class="tl-stat-n">340+</div>
+              <div class="tl-stat-l">Verified Teachers</div>
+            </div>
+            <div>
+              <div class="tl-stat-n">98%</div>
+              <div class="tl-stat-l">Satisfaction Rate</div>
+            </div>
+            <div>
+              <div class="tl-stat-n">12k+</div>
+              <div class="tl-stat-l">Sessions Completed</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="nbtn fill" style="padding:11px 26px;border-radius:10px;font-size:13.5px" onclick="openModal('auth')">Book a Session</button>
+            <button class="nbtn" style="padding:11px 26px;border-radius:10px;font-size:13.5px" onclick="openModal('teacher')">Teach on Lemma</button>
+          </div>
+        </div>
+        <div class="teacher-cards-mini reveal">
+          <div class="tcm">
+            <div class="tcm-av" style="background:linear-gradient(135deg,#6366F1,#818CF8)">MK</div>
+            <div>
+              <div class="tcm-name">Ms. Meera Kaul</div>
+              <div class="tcm-sub">Calculus &amp; Algebra &middot; Grades 9 to 12</div>
+            </div>
+            <div class="tcm-right">
+              <div class="tcm-rate">₹299 / session</div>
+              <div class="tcm-stars">★★★★★ (98)</div>
+            </div>
+          </div>
+          <div class="tcm">
+            <div class="tcm-av" style="background:linear-gradient(135deg,#0891B2,#22D3EE)">RS</div>
+            <div>
+              <div class="tcm-name">Mr. Rahul Singh</div>
+              <div class="tcm-sub">Olympiad Coach &middot; IMO / RMO / AMC</div>
+            </div>
+            <div class="tcm-right">
+              <div class="tcm-rate">₹499 / session</div>
+              <div class="tcm-stars">★★★★★ (74)</div>
+            </div>
+          </div>
+          <div class="tcm">
+            <div class="tcm-av" style="background:linear-gradient(135deg,#059669,#34D399)">FA</div>
+            <div>
+              <div class="tcm-name">Ms. Fatima Ansari</div>
+              <div class="tcm-sub">Foundations &middot; Grades 1 to 8</div>
+            </div>
+            <div class="tcm-right">
+              <div class="tcm-rate">₹199 / session</div>
+              <div class="tcm-stars">★★★★☆ (52)</div>
+            </div>
+          </div>
+          <div class="tcm">
+            <div class="tcm-av" style="background:linear-gradient(135deg,#B45309,#FBBF24)">AK</div>
+            <div>
+              <div class="tcm-name">Mr. Aryan Kapoor</div>
+              <div class="tcm-sub">Statistics &amp; Probability &middot; Grades 10 to 12</div>
+            </div>
+            <div class="tcm-right">
+              <div class="tcm-rate">₹349 / session</div>
+              <div class="tcm-stars">★★★★★ (61)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOARDS -->
+  <div class="boards-sec" id="boards">
+    <div class="wrap">
+      <p class="boards-top">Supported Curricula and Boards</p>
+      <div class="boards-row">
+        <span class="bchip">CBSE</span>
+        <span class="bchip">ICSE / ISC</span>
+        <span class="bchip">IB MYP &amp; DP</span>
+        <span class="bchip">JK Board</span>
+        <span class="bchip">UP Board</span>
+        <span class="bchip">Maharashtra Board</span>
+        <span class="bchip">AP Board</span>
+        <span class="bchip">SAT Math</span>
+        <span class="bchip">Common Core US</span>
+        <span class="bchip">ACT Math</span>
+        <span class="bchip">A Level UK</span>
+        <span class="bchip">GCSE UK</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <section class="cta-sec sec">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="sec-eyebrow" style="justify-content:center">Begin</div>
+        <h2 class="display">Mathematics is not hard.<br/>The right path makes it <em>beautiful</em>.</h2>
+        <p class="sub">Join thousands of students already learning on Lemma, completely free.</p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+          <button class="hbtn solid" onclick="openModal('auth')">Create Free Account ↗</button>
+          <button class="hbtn outline" onclick="openModal('assess')">Take the Placement Test</button>
+        </div>
+        <div class="cta-qed"><strong>Theorem:</strong> Every great mathematician was once a beginner. &emsp;&#x25A1;</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="flogo">
+      <div class="brand-mark" style="width:28px;height:28px"><span style="font-size:15px">L</span></div>
+      <span style="font-family:'Cormorant',serif;font-size:17px;letter-spacing:2px;color:var(--parch)">Lemma</span>
+    </div>
+    <p>Every great proof starts here &nbsp;&middot;&nbsp; Free for every student, always</p>
+    <p style="margin-top:.4rem;font-size:11px;color:var(--fog)">&copy; 2025 Lemma &nbsp;&middot;&nbsp; Built for learners everywhere</p>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     STUDENT DASHBOARD
+═══════════════════════════════════════════ -->
+<div id="studentDash" class="page hidden">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sb-brand">
+        <div class="brand-mark"><span>L</span></div>
+        <span class="brand-name">Lemma</span>
+      </div>
+      <nav class="sb-nav">
+        <div class="sb-section">Learn</div>
+        <div class="sb-item active" onclick="setSbActive(this)">
+          <span class="ico">⊞</span> Dashboard
+        </div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">🗺</span> My Path
+        </div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">🤖</span> AI Tutor
+        </div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">📚</span> Practice
+        </div>
+        <div class="sb-section">Connect</div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">👨‍🏫</span> Find Teachers
+        </div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">📅</span> My Sessions
+        </div>
+        <div class="sb-section">Progress</div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">📊</span> Analytics
+        </div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">🏆</span> Leaderboard
+        </div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">🎖</span> Achievements
+        </div>
+        <div class="sb-section">Account</div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">⚙</span> Settings
+        </div>
+      </nav>
+      <div class="sb-bottom">
+        <div class="sb-user">
+          <div class="sb-av">SR</div>
+          <div>
+            <div class="sb-uname">Sara Rashid</div>
+            <div class="sb-urole">Rising Scholar &middot; CBSE Gr. 11</div>
+          </div>
+          <button class="sb-logout" onclick="showPage('landing')" title="Log Out">⏻</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title">Good morning, Sara</div>
+          <div style="font-size:13px;color:var(--stone);font-weight:300">Monday, 30 March 2025 &nbsp;&middot;&nbsp; Your streak is on fire 🔥</div>
+        </div>
+        <div class="topbar-right">
+          <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+          <div class="dash-av">SR</div>
+        </div>
+      </div>
+
+      <!-- STATS ROW -->
+      <div class="stat-row">
+        <div class="scard s1">
+          <div class="scard-label">Total XP</div>
+          <div class="scard-n">3,240</div>
+          <div class="scard-sub">Level 13 &mdash; Theorem Seeker</div>
+        </div>
+        <div class="scard s2">
+          <div class="scard-label">Day Streak</div>
+          <div class="scard-n">9 🔥</div>
+          <div class="scard-sub">Best ever: 14 days</div>
+        </div>
+        <div class="scard s3">
+          <div class="scard-label">Problems Solved</div>
+          <div class="scard-n">168</div>
+          <div class="scard-sub">+12 this week</div>
+        </div>
+        <div class="scard s4">
+          <div class="scard-label">Accuracy</div>
+          <div class="scard-n">91%</div>
+          <div class="scard-sub">Up 3% from last week</div>
+        </div>
+      </div>
+
+      <!-- ROW 1 -->
+      <div class="dash-cols">
+        <!-- Today's Task + XP + Heatmap -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="panel">
+            <div class="panel-head">
+              <span class="panel-title">Level Progress</span>
+              <button class="panel-action">View all achievements</button>
+            </div>
+            <div class="panel-body">
+              <div class="xp-row">
+                <span class="xp-level">Level 13 &mdash; Theorem Seeker</span>
+                <span class="xp-pts">3,240 / 4,000 XP</span>
+              </div>
+              <div class="xp-track">
+                <div class="xp-fill" style="width:81%"></div>
+              </div>
+              <div class="task-card">
+                <div class="task-ico">📐</div>
+                <div>
+                  <div class="task-title">Today: Integration by Parts</div>
+                  <div class="task-meta">Calculus &middot; Moderate level &middot; Est. 25 min &middot; +120 XP</div>
+                  <button class="task-btn">Continue Lesson</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <span class="panel-title">30 Day Activity</span>
+              <span style="font-size:11px;color:var(--stone);font-weight:300">Each square is one day</span>
+            </div>
+            <div class="panel-body">
+              <div class="heatmap" id="heatmap"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Topic Mastery -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Topic Mastery</span>
+            <button class="panel-action">Full report</button>
+          </div>
+          <div class="panel-body">
+            <div class="topic-list">
+              <div class="titem">
+                <span class="tname">Calculus</span>
+                <div class="tprog"><div class="tprog-f" style="width:83%;background:var(--gold)"></div></div>
+                <span class="tpct">83%</span>
+              </div>
+              <div class="titem">
+                <span class="tname">Algebra</span>
+                <div class="tprog"><div class="tprog-f" style="width:96%;background:var(--green)"></div></div>
+                <span class="tpct">96%</span>
+              </div>
+              <div class="titem">
+                <span class="tname">Probability</span>
+                <div class="tprog"><div class="tprog-f" style="width:42%;background:var(--red)"></div></div>
+                <span class="tpct">42%</span>
+              </div>
+              <div class="titem">
+                <span class="tname">Geometry</span>
+                <div class="tprog"><div class="tprog-f" style="width:67%;background:var(--blue)"></div></div>
+                <span class="tpct">67%</span>
+              </div>
+              <div class="titem">
+                <span class="tname">Trigonometry</span>
+                <div class="tprog"><div class="tprog-f" style="width:78%;background:var(--bronze)"></div></div>
+                <span class="tpct">78%</span>
+              </div>
+              <div class="titem">
+                <span class="tname">Combinatorics</span>
+                <div class="tprog"><div class="tprog-f" style="width:31%;background:var(--red)"></div></div>
+                <span class="tpct">31%</span>
+              </div>
+              <div class="titem">
+                <span class="tname">Statistics</span>
+                <div class="tprog"><div class="tprog-f" style="width:55%;background:var(--blue)"></div></div>
+                <span class="tpct">55%</span>
+              </div>
+            </div>
+            <div style="margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid var(--border)">
+              <div style="font-size:12px;color:var(--stone);font-weight:300;margin-bottom:.6rem">AI Recommendation</div>
+              <div style="font-size:13px;color:var(--parch);line-height:1.7">Focus on Combinatorics next. Your probability base is strong enough to accelerate here. Estimated 8 lessons to reach 70%.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 2 -->
+      <div class="dash-cols">
+        <!-- AI Tutor Quick Access -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Ask the AI Tutor</span>
+            <span style="font-size:11px;color:var(--green);font-family:'Fira Code',monospace">● Online</span>
+          </div>
+          <div class="panel-body">
+            <div class="ai-chip">Lemma AI &nbsp;·&nbsp; Powered by Gemini</div>
+            <textarea class="tutor-prompt" placeholder="Ask any mathematics question. For example: explain the product rule, or give me a practice problem on integration..."></textarea>
+            <div class="tutor-actions">
+              <span class="tutor-hint">Free &middot; Unlimited &middot; Instant</span>
+              <button class="tutor-send">Ask Lemma ↗</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Sessions -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Upcoming Sessions</span>
+            <button class="panel-action" onclick="openModal('auth')">Book new</button>
+          </div>
+          <div class="panel-body">
+            <div class="session-list">
+              <div class="sess-card">
+                <div class="sess-av" style="background:linear-gradient(135deg,#6366F1,#818CF8)">MK</div>
+                <div>
+                  <div class="sess-name">Ms. Meera Kaul</div>
+                  <div class="sess-sub">Definite Integrals &middot; 45 min</div>
+                </div>
+                <div class="sess-right">
+                  <div class="sess-time">Tomorrow, 4:00 PM</div>
+                  <div class="sess-badge upcoming">Upcoming</div>
+                </div>
+              </div>
+              <div class="sess-card">
+                <div class="sess-av" style="background:linear-gradient(135deg,#B45309,#FBBF24)">AK</div>
+                <div>
+                  <div class="sess-name">Mr. Aryan Kapoor</div>
+                  <div class="sess-sub">Bayes Theorem &middot; 60 min</div>
+                </div>
+                <div class="sess-right">
+                  <div class="sess-time">Thu, 5:30 PM</div>
+                  <div class="sess-badge upcoming">Upcoming</div>
+                </div>
+              </div>
+              <div class="sess-card">
+                <div class="sess-av" style="background:linear-gradient(135deg,#0891B2,#22D3EE)">RS</div>
+                <div>
+                  <div class="sess-name">Mr. Rahul Singh</div>
+                  <div class="sess-sub">Olympiad Problem Set 7</div>
+                </div>
+                <div class="sess-right">
+                  <div class="sess-time">Last Saturday</div>
+                  <div class="sess-badge done">Completed</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 3 -->
+      <div class="dash-cols">
+        <!-- Leaderboard -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">School Leaderboard</span>
+            <button class="panel-action">Global view</button>
+          </div>
+          <div class="panel-body">
+            <div class="lb-list">
+              <div class="lb-item">
+                <span class="lb-rank" style="color:var(--gold)">1</span>
+                <div class="lb-av" style="background:linear-gradient(135deg,#6366F1,#818CF8)">AZ</div>
+                <span class="lb-name">Amir Zahoor</span>
+                <span class="lb-xp">4,820 XP</span>
+              </div>
+              <div class="lb-item">
+                <span class="lb-rank" style="color:var(--stone)">2</span>
+                <div class="lb-av" style="background:linear-gradient(135deg,#0891B2,#22D3EE)">PW</div>
+                <span class="lb-name">Priya Walia</span>
+                <span class="lb-xp">4,210 XP</span>
+              </div>
+              <div class="lb-item">
+                <span class="lb-rank" style="color:var(--bronze)">3</span>
+                <div class="lb-av" style="background:linear-gradient(135deg,#B45309,#FBBF24)">RB</div>
+                <span class="lb-name">Rohan Bhat</span>
+                <span class="lb-xp">3,990 XP</span>
+              </div>
+              <div class="lb-item" style="background:rgba(184,149,90,.04);border-radius:8px;padding:11px 8px">
+                <span class="lb-rank">4</span>
+                <div class="lb-av" style="background:linear-gradient(135deg,var(--bronze),var(--gold))">SR</div>
+                <span class="lb-name">Sara Rashid <span class="lb-you">you</span></span>
+                <span class="lb-xp">3,240 XP</span>
+              </div>
+              <div class="lb-item">
+                <span class="lb-rank">5</span>
+                <div class="lb-av" style="background:linear-gradient(135deg,#059669,#34D399)">NK</div>
+                <span class="lb-name">Nida Khan</span>
+                <span class="lb-xp">2,980 XP</span>
+              </div>
+              <div class="lb-item">
+                <span class="lb-rank">6</span>
+                <div class="lb-av" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">TM</div>
+                <span class="lb-name">Tariq Mir</span>
+                <span class="lb-xp">2,740 XP</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Find a Teacher -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Recommended Teachers</span>
+            <button class="panel-action">Browse all</button>
+          </div>
+          <div class="panel-body" style="display:flex;flex-direction:column;gap:10px">
+            <div class="sess-card">
+              <div class="sess-av" style="background:linear-gradient(135deg,#6366F1,#818CF8)">MK</div>
+              <div>
+                <div class="sess-name">Ms. Meera Kaul</div>
+                <div class="sess-sub">Calculus specialist &middot; ★★★★★</div>
+              </div>
+              <div class="sess-right">
+                <div class="sess-time" style="color:var(--bronze)">₹299/hr</div>
+                <div class="sess-badge upcoming" style="margin-top:4px">Available</div>
+              </div>
+            </div>
+            <div class="sess-card">
+              <div class="sess-av" style="background:linear-gradient(135deg,#059669,#34D399)">FA</div>
+              <div>
+                <div class="sess-name">Ms. Fatima Ansari</div>
+                <div class="sess-sub">Probability &middot; ★★★★☆</div>
+              </div>
+              <div class="sess-right">
+                <div class="sess-time" style="color:var(--bronze)">₹199/hr</div>
+                <div class="sess-badge upcoming" style="margin-top:4px">Available</div>
+              </div>
+            </div>
+            <div style="padding:1rem;background:var(--void);border:1px solid var(--border);border-radius:var(--radius);text-align:center">
+              <div style="font-size:13px;color:var(--stone);font-weight:300;margin-bottom:.8rem">Probability is your weakest area. A 2 hour session with a specialist can raise your mastery from 42% to 65%.</div>
+              <button class="task-btn" style="width:100%">Book a Session Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     TEACHER DASHBOARD
+═══════════════════════════════════════════ -->
+<div id="teacherDash" class="page hidden">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sb-brand">
+        <div class="brand-mark"><span>L</span></div>
+        <span class="brand-name">Lemma</span>
+      </div>
+      <nav class="sb-nav">
+        <div class="sb-section">Teach</div>
+        <div class="sb-item active" onclick="setSbActive(this)">
+          <span class="ico">⊞</span> Dashboard
+        </div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">🔔</span> Student Requests
+          <span style="margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:1px 7px;border-radius:100px;font-family:'Fira Code',monospace">3</span>
+        </div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">👥</span> My Students
+        </div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">📅</span> Schedule
+        </div>
+        <div class="sb-section">Earnings</div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">₹</span> Earnings
+        </div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">📊</span> Analytics
+        </div>
+        <div class="sb-section">Profile</div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">⭐</span> Reviews
+        </div>
+        <div class="sb-item" onclick="setSbActive(this)">
+          <span class="ico">⚙</span> Settings
+        </div>
+      </nav>
+      <div class="sb-bottom">
+        <div class="sb-user">
+          <div class="sb-av">MK</div>
+          <div>
+            <div class="sb-uname">Ms. Meera Kaul</div>
+            <div class="sb-urole">Teacher &middot; Calculus &amp; Algebra</div>
+          </div>
+          <button class="sb-logout" onclick="showPage('landing')" title="Log Out">⏻</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title">Teacher Dashboard</div>
+          <div style="font-size:13px;color:var(--stone);font-weight:300">Monday, 30 March 2025 &nbsp;&middot;&nbsp; You have 3 new session requests</div>
+        </div>
+        <div class="topbar-right">
+          <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+          <div class="dash-av" style="background:linear-gradient(135deg,#6366F1,#818CF8)">MK</div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stat-row">
+        <div class="scard s1">
+          <div class="scard-label">This Month</div>
+          <div class="scard-n">₹8,240</div>
+          <div class="scard-sub">+18% vs last month</div>
+        </div>
+        <div class="scard s2">
+          <div class="scard-label">Active Students</div>
+          <div class="scard-n">24</div>
+          <div class="scard-sub">3 new this week</div>
+        </div>
+        <div class="scard s3">
+          <div class="scard-label">Sessions Done</div>
+          <div class="scard-n">98</div>
+          <div class="scard-sub">12 this month</div>
+        </div>
+        <div class="scard s4">
+          <div class="scard-label">Rating</div>
+          <div class="scard-n">4.9 ★</div>
+          <div class="scard-sub">Based on 98 reviews</div>
+        </div>
+      </div>
+
+      <!-- AVAILABILITY + REQUESTS -->
+      <div class="dash-full">
+        <div class="avail-row">
+          <div>
+            <div class="avail-label">Available for New Students</div>
+            <div class="avail-sub">Toggle off when your schedule is full</div>
+          </div>
+          <div class="toggle on" id="availToggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+
+      <div class="dash-cols">
+        <!-- STUDENT REQUESTS -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Student Requests</span>
+            <span style="background:var(--red);color:#fff;font-size:10px;padding:2px 9px;border-radius:100px;font-family:'Fira Code',monospace">3 pending</span>
+          </div>
+          <div class="panel-body">
+            <div class="req-list">
+              <div class="req-card">
+                <div class="req-av" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">AM</div>
+                <div>
+                  <div class="req-name">Aryan Mehta</div>
+                  <div class="req-info">CBSE Grade 12 &middot; Requested 10 min ago</div>
+                  <span class="req-topic">Integration &amp; Differentiation</span>
+                </div>
+                <div class="req-actions">
+                  <button class="req-accept" onclick="acceptReq(this)">Accept</button>
+                  <button class="req-decline" onclick="declineReq(this)">Decline</button>
+                </div>
+              </div>
+              <div class="req-card">
+                <div class="req-av" style="background:linear-gradient(135deg,#059669,#34D399)">ZA</div>
+                <div>
+                  <div class="req-name">Zara Ali</div>
+                  <div class="req-info">IB DP Year 2 &middot; Requested 45 min ago</div>
+                  <span class="req-topic">Limits and Continuity</span>
+                </div>
+                <div class="req-actions">
+                  <button class="req-accept" onclick="acceptReq(this)">Accept</button>
+                  <button class="req-decline" onclick="declineReq(this)">Decline</button>
+                </div>
+              </div>
+              <div class="req-card">
+                <div class="req-av" style="background:linear-gradient(135deg,#0891B2,#22D3EE)">KS</div>
+                <div>
+                  <div class="req-name">Kabir Sharma</div>
+                  <div class="req-info">JK Board Grade 11 &middot; Requested 2 hrs ago</div>
+                  <span class="req-topic">Algebra &amp; Quadratic Equations</span>
+                </div>
+                <div class="req-actions">
+                  <button class="req-accept" onclick="acceptReq(this)">Accept</button>
+                  <button class="req-decline" onclick="declineReq(this)">Decline</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EARNINGS CHART -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">Earnings Overview</span>
+            <button class="panel-action">Full report</button>
+          </div>
+          <div class="panel-body">
+            <div class="earn-total">₹8,240</div>
+            <div class="earn-period">THIS MONTH</div>
+            <div class="earn-chart" id="earnChart"></div>
+            <div class="earn-labels" id="earnLabels"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:1rem">
+              <div style="background:var(--void);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;text-align:center">
+                <div style="font-family:'Fira Code',monospace;font-size:9.5px;color:var(--fog);letter-spacing:1.5px;margin-bottom:.4rem">TOTAL EARNED</div>
+                <div style="font-family:'Cormorant',serif;font-size:1.5rem;color:var(--honey)">₹41,200</div>
+              </div>
+              <div style="background:var(--void);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;text-align:center">
+                <div style="font-family:'Fira Code',monospace;font-size:9.5px;color:var(--fog);letter-spacing:1.5px;margin-bottom:.4rem">AVG PER SESSION</div>
+                <div style="font-family:'Cormorant',serif;font-size:1.5rem;color:var(--green)">₹299</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 2 TEACHER -->
+      <div class="dash-cols">
+        <!-- SCHEDULE -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title">This Week</span>
+            <button class="panel-action">Full calendar</button>
+          </div>
+          <div class="panel-body">
+            <div class="cal-grid" id="calGrid"></div>
+            <div style="font-family:'Fira Code',monospace;font-size:10px;letter-spacing:1.5px;color:var(--stone);text-transform:uppercase;margin-bottom:.8rem">Upcoming Sessions</div>
+            <div class="upcomings">
+              <div class="upcoming-item">
+                <div class="upcoming-time">Today 4pm</div>
+                <div>
+                  <div class="upcoming-name">Sara Rashid</div>
+                  <div class="upcoming-topic">Definite Integrals &middot; 45 min</div>
+                </div>
+                <div class="status-online">Join</div>
+              </div>
+              <div class="upcoming-item">
+                <div class="upcoming-time">Tue 11am</div>
+                <div>
+                  <div class="upcoming-name">Rohan Bhat</div>
+                  <div class="upcoming-topic">Chain Rule &middot; 60 min</div>
+                </div>
+              </div>
+              <div class="upcoming-item">
+                <div class="upcoming-time">Wed 5pm</div>
+                <div>
+                  <div class="upcoming-name">Priya Walia</div>
+                  <div class="upcoming-topic">Taylor Series &middot; 90 min</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACTIVE STUDENTS + REVIEWS -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="panel">
+            <div class="panel-head">
+              <span class="panel-title">Active Students</span>
+              <button class="panel-action">View all 24</button>
+            </div>
+            <div class="panel-body" style="padding-top:.8rem;padding-bottom:.8rem">
+              <div class="stu-list">
+                <div class="stu-row">
+                  <div class="stu-av" style="background:linear-gradient(135deg,var(--bronze),var(--gold))">SR</div>
+                  <div style="flex:1"><div class="stu-name">Sara Rashid</div><div class="stu-prog">CBSE Gr 11 &middot; Calculus</div></div>
+                  <div class="online-dot"></div>
+                </div>
+                <div class="stu-row">
+                  <div class="stu-av" style="background:linear-gradient(135deg,#7C3AED,#A78BFA)">AZ</div>
+                  <div style="flex:1"><div class="stu-name">Amir Zahoor</div><div class="stu-prog">JK Board Gr 12 &middot; Algebra</div></div>
+                  <div class="online-dot" style="background:var(--fog)"></div>
+                </div>
+                <div class="stu-row">
+                  <div class="stu-av" style="background:linear-gradient(135deg,#0891B2,#22D3EE)">PW</div>
+                  <div style="flex:1"><div class="stu-name">Priya Walia</div><div class="stu-prog">IB DP Y2 &middot; Taylor Series</div></div>
+                  <div class="online-dot"></div>
+                </div>
+                <div class="stu-row">
+                  <div class="stu-av" style="background:linear-gradient(135deg,#059669,#34D399)">RB</div>
+                  <div style="flex:1"><div class="stu-name">Rohan Bhat</div><div class="stu-prog">CBSE Gr 11 &middot; Chain Rule</div></div>
+                  <div class="online-dot" style="background:var(--fog)"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <span class="panel-title">Recent Reviews</span>
+              <span style="font-family:'Fira Code',monospace;font-size:11px;color:var(--bronze)">4.9 ★ avg</span>
+            </div>
+            <div class="panel-body">
+              <div class="review-list">
+                <div class="review-item">
+                  <div class="review-stars">★★★★★</div>
+                  <div class="review-text">Ms. Kaul explains concepts so clearly. Integration finally makes sense to me after three sessions.</div>
+                  <div class="review-by">Sara Rashid &nbsp;&middot;&nbsp; 2 days ago</div>
+                </div>
+                <div class="review-item">
+                  <div class="review-stars">★★★★★</div>
+                  <div class="review-text">Best teacher on the platform. She adapts her pace perfectly and never makes you feel rushed.</div>
+                  <div class="review-by">Priya Walia &nbsp;&middot;&nbsp; 5 days ago</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     AUTH MODAL
+═══════════════════════════════════════════ -->
+<div class="overlay" id="authOverlay">
+  <div class="modal">
+    <button class="mclose" onclick="closeModal('auth')">✕</button>
+    <div class="modal-brand">
+      <div class="brand-mark"><span>L</span></div>
+      <span style="font-family:'Cormorant',serif;font-size:18px;letter-spacing:1.5px">Lemma</span>
+    </div>
+    <h3 id="authTitle">Welcome to Lemma</h3>
+    <p class="msub" id="authSub">Sign up free. No credit card required.</p>
+    <div class="roles">
+      <div class="role-card active" id="roleStu" onclick="setAuthRole('student')">
+        <span class="role-emoji">🎓</span>
+        <div class="role-title">Student</div>
+        <div class="role-note">I want to learn</div>
+      </div>
+      <div class="role-card" id="roleTea" onclick="setAuthRole('teacher')">
+        <span class="role-emoji">👨‍🏫</span>
+        <div class="role-title">Teacher</div>
+        <div class="role-note">I want to teach</div>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="fl">Email Address</label>
+      <input class="fi" type="email" placeholder="you@email.com"/>
+    </div>
+    <div class="fg" id="authNameField">
+      <label class="fl">Full Name</label>
+      <input class="fi" type="text" placeholder="Your name"/>
+    </div>
+    <div class="fg">
+      <label class="fl">Password</label>
+      <input class="fi" type="password" placeholder="Create a strong password"/>
+    </div>
+    <button class="fbtn" id="authSubmit" onclick="doAuth()">Create Account and Start Learning</button>
+    <div class="msep">or continue with</div>
+    <button class="mbtn-goo">🌐 &nbsp; Continue with Google</button>
+    <div class="mswitch">Already have an account? <a onclick="toggleAuth()">Log In</a></div>
+  </div>
+</div>
+
+<!-- ASSESS MODAL -->
+<div class="overlay" id="assessOverlay">
+  <div class="modal wide" id="assessModal">
+    <button class="mclose" onclick="closeModal('assess')">✕</button>
+    <div class="modal-brand">
+      <div class="brand-mark" style="width:26px;height:26px"><span style="font-size:13px">L</span></div>
+      <span style="font-family:'Fira Code',monospace;font-size:10px;color:var(--stone);letter-spacing:2px">PLACEMENT ASSESSMENT</span>
+    </div>
+    <div class="assess-header">
+      <span style="font-family:'Fira Code',monospace;font-size:11px;color:var(--stone)" id="qNum">Question 1 of 5</span>
+      <div class="assess-dots" id="dots"></div>
+    </div>
+    <div class="alevel-badge" id="aLvl">Basic</div>
+    <div class="aq" id="aQ">Loading question...</div>
+    <ul class="aopts" id="aOpts"></ul>
+    <button class="fbtn" id="nxtBtn" disabled onclick="nextQ()">Next Question</button>
+    <p style="text-align:center;font-family:'Fira Code',monospace;font-size:10px;color:var(--fog);margin-top:.75rem;letter-spacing:.5px">
+      Results personalise your Lemma learning path
+    </p>
+  </div>
+</div>
+
+<!-- TEACHER APPLY MODAL -->
+<div class="overlay" id="teacherOverlay">
+  <div class="modal">
+    <button class="mclose" onclick="closeModal('teacher')">✕</button>
+    <div class="modal-brand">
+      <div class="brand-mark"><span>L</span></div>
+      <span style="font-family:'Cormorant',serif;font-size:18px;letter-spacing:1.5px">Lemma</span>
+    </div>
+    <h3>Apply to Teach</h3>
+    <p class="msub">Set your own rates. Teach on your schedule. Earn every session.</p>
+    <div class="fg"><label class="fl">Full Name</label><input class="fi" type="text" placeholder="Your full name"/></div>
+    <div class="fg"><label class="fl">Email</label><input class="fi" type="email" placeholder="you@email.com"/></div>
+    <div class="fg"><label class="fl">Subject Specialisation</label><input class="fi" type="text" placeholder="e.g. Calculus, Olympiad, Algebra"/></div>
+    <div class="fg"><label class="fl">Qualification</label><input class="fi" type="text" placeholder="e.g. M.Sc. Mathematics, IIT Graduate"/></div>
+    <div class="fg"><label class="fl">Your Hourly Rate (₹)</label><input class="fi" type="text" placeholder="e.g. 299"/></div>
+    <button class="fbtn">Submit Application</button>
+    <p style="text-align:center;font-family:'Fira Code',monospace;font-size:10px;color:var(--fog);margin-top:.75rem;letter-spacing:.5px">Applications reviewed within 48 hours</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════════ -->
+<script>
+/* ─────────────────────────────────────────
+   FLOATING MATH SYMBOLS
+───────────────────────────────────────── */
+const GLYPHS = ['∫','∑','π','√','∂','∞','θ','Δ','λ','φ','≡','∇','ℝ','∀','∃','α','β','γ','σ','ε','ζ','η','μ','ρ','τ','ω','Ω','Γ','Λ','Ξ','Σ','Φ','Ψ','≈','∝','⊕','∩','∪','∈','⊂','∧','∨','⇒','⇔','∮','lim','dx','dy','∑ᵢ','xⁿ','e^x','f(x)','∫₀','d/dx','∇²'];
+
+const scene = document.getElementById('scene');
+const W = window.innerWidth, H = window.innerHeight;
+const COUNT = 55;
+
+for(let i = 0; i < COUNT; i++){
+  const el = document.createElement('div');
+  el.className = 'sym';
+
+  const isNear = Math.random() < 0.25;
+  const isFar  = Math.random() < 0.35;
+  
+  const size = isNear ? (28 + Math.random()*32) : isFar ? (10 + Math.random()*14) : (16 + Math.random()*22);
+  const op   = isNear ? (0.06 + Math.random()*0.1) : isFar ? (0.04 + Math.random()*0.07) : (0.08 + Math.random()*0.14);
+  const dur  = 18 + Math.random()*30;
+  const delay = -(Math.random() * dur);
+  const travel = H + 120;
+  const r0 = (Math.random()-0.5)*40;
+  const r1 = r0 + (Math.random()-0.5)*30;
+  const sc = 0.85 + Math.random()*0.3;
+  const blur = isNear ? Math.random()*2 : isFar ? Math.random()*4 : 0;
+
+  el.textContent = GLYPHS[Math.floor(Math.random()*GLYPHS.length)];
+  el.style.cssText = `
+    left:${Math.random()*100}%;
+    bottom:${-size}px;
+    font-size:${size}px;
+    --op:${op};
+    --r0:${r0}deg;
+    --r1:${r1}deg;
+    --travel:${travel};
+    --sc:${sc};
+    animation-duration:${dur}s;
+    animation-delay:${delay}s;
+    filter:blur(${blur}px);
+  `;
+  scene.appendChild(el);
+}
+
+/* Mouse parallax on scene */
+document.addEventListener('mousemove', e => {
+  const xRatio = (e.clientX / window.innerWidth  - 0.5) * 18;
+  const yRatio = (e.clientY / window.innerHeight - 0.5) * 10;
+  scene.style.transform = `translate(${xRatio}px, ${yRatio}px)`;
+  document.getElementById('glow').style.transform = 
+    `translate(calc(-50% + ${xRatio*1.5}px), calc(-50% + ${yRatio*1.5}px))`;
+});
+
+/* ─────────────────────────────────────────
+   NAV SCROLL
+───────────────────────────────────────── */
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+/* ─────────────────────────────────────────
+   SCROLL REVEAL
+───────────────────────────────────────── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ─────────────────────────────────────────
+   PAGE ROUTING
+───────────────────────────────────────── */
+function showPage(name) {
+  document.getElementById('landingPage').classList.add('hidden');
+  document.getElementById('studentDash').classList.add('hidden');
+  document.getElementById('teacherDash').classList.add('hidden');
+  document.getElementById('navbar').classList.add('hidden');
+  scene.style.display = 'none';
+  document.getElementById('grain').style.display = 'none';
+  document.getElementById('glow').style.display = 'none';
+
+  if(name === 'landing') {
+    document.getElementById('landingPage').classList.remove('hidden');
+    document.getElementById('navbar').classList.remove('hidden');
+    scene.style.display = 'block';
+    document.getElementById('grain').style.display = 'block';
+    document.getElementById('glow').style.display = 'block';
+    window.scrollTo(0,0);
+  } else if(name === 'student') {
+    document.getElementById('studentDash').classList.remove('hidden');
+    buildHeatmap();
+  } else if(name === 'teacher') {
+    document.getElementById('teacherDash').classList.remove('hidden');
+    buildEarnChart();
+    buildCalendar();
+  }
+}
+
+/* ─────────────────────────────────────────
+   SIDEBAR
+───────────────────────────────────────── */
+function setSbActive(el) {
+  el.closest('.app-shell').querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ─────────────────────────────────────────
+   MODALS
+───────────────────────────────────────── */
+function openModal(id) {
+  document.querySelectorAll('.overlay').forEach(o => o.classList.remove('open'));
+  const map = { auth:'authOverlay', assess:'assessOverlay', teacher:'teacherOverlay' };
+  document.getElementById(map[id]).classList.add('open');
+  if(id === 'assess') initAssess();
+}
+function closeModal(id) {
+  const map = { auth:'authOverlay', assess:'assessOverlay', teacher:'teacherOverlay' };
+  document.getElementById(map[id]).classList.remove('open');
+}
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target === o) o.classList.remove('open'); });
+});
+
+/* ─────────────────────────────────────────
+   AUTH MODAL
+───────────────────────────────────────── */
+let authRole = 'student';
+let isLogin  = false;
+
+function setAuthRole(role) {
+  authRole = role;
+  document.getElementById('roleStu').classList.toggle('active', role === 'student');
+  document.getElementById('roleTea').classList.toggle('active', role === 'teacher');
+  const btn = document.getElementById('authSubmit');
+  btn.textContent = role === 'teacher' ? 'Create Teacher Account' : 'Create Account and Start Learning';
+}
+
+function toggleAuth() {
+  isLogin = !isLogin;
+  document.getElementById('authTitle').textContent = isLogin ? 'Welcome back' : 'Welcome to Lemma';
+  document.getElementById('authSub').textContent   = isLogin ? 'Continue your journey.' : 'Sign up free. No credit card required.';
+  document.getElementById('authNameField').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('authSubmit').textContent = isLogin ? 'Log In' : (authRole === 'teacher' ? 'Create Teacher Account' : 'Create Account and Start Learning');
+  document.querySelector('.mswitch').innerHTML = isLogin
+    ? 'New to Lemma? <a onclick="toggleAuth()">Sign Up Free</a>'
+    : 'Already have an account? <a onclick="toggleAuth()">Log In</a>';
+}
+
+function doAuth() {
+  closeModal('auth');
+  if(authRole === 'teacher') {
+    showPage('teacher');
+  } else {
+    showPage('student');
+  }
+}
+
+/* ─────────────────────────────────────────
+   ASSESSMENT
+───────────────────────────────────────── */
+const QS = [
+  { level:'Basic',    q:'What is the value of 3² + 4²?',                                opts:['7','14','25','49'],         ans:2 },
+  { level:'Basic',    q:'Simplify the expression: 5x + 3x − 2x',                        opts:['6x','8x','5x','4x'],        ans:0 },
+  { level:'Moderate', q:'If f(x) = x² − 4x + 4, find f(2)',                             opts:['0','4','8','2'],            ans:0 },
+  { level:'Moderate', q:'What is the sum of interior angles of a hexagon?',              opts:['540°','720°','900°','360°'],ans:1 },
+  { level:'Advanced', q:'Evaluate: lim(x→0) of sin(x) divided by x',                    opts:['0','∞','1','Undefined'],    ans:2 },
+];
+let curQ = 0, selO = null, score = 0;
+
+function initAssess() {
+  curQ = 0; selO = null; score = 0;
+  renderDots(); renderQ();
+}
+function renderDots() {
+  const c = document.getElementById('dots'); c.innerHTML = '';
+  QS.forEach((_,i) => {
+    const d = document.createElement('div');
+    d.className = 'adot' + (i === curQ ? ' cur' : i < curQ ? ' done' : '');
+    c.appendChild(d);
+  });
+}
+function renderQ() {
+  const q = QS[curQ];
+  document.getElementById('qNum').textContent = `Question ${curQ+1} of ${QS.length}`;
+  document.getElementById('aLvl').textContent  = q.level;
+  document.getElementById('aQ').textContent    = q.q;
+  const ul = document.getElementById('aOpts'); ul.innerHTML = '';
+  ['A','B','C','D'].forEach((k,i) => {
+    const li = document.createElement('li');
+    li.className = 'aopt';
+    li.innerHTML = `<span class="akey">${k}</span>${q.opts[i]}`;
+    li.onclick = () => pickOpt(i);
+    ul.appendChild(li);
+  });
+  document.getElementById('nxtBtn').disabled = true;
+  selO = null; renderDots();
+}
+function pickOpt(i) {
+  selO = i;
+  document.querySelectorAll('.aopt').forEach((el,j) => el.classList.toggle('sel', j === i));
+  document.getElementById('nxtBtn').disabled = false;
+}
+function nextQ() {
+  if(selO === null) return;
+  const q = QS[curQ];
+  const opts = document.querySelectorAll('.aopt');
+  if(selO === q.ans) { opts[selO].classList.add('ok'); score++; }
+  else { opts[selO].classList.add('ng'); opts[q.ans].classList.add('ok'); }
+  document.getElementById('nxtBtn').disabled = true;
+  setTimeout(() => { curQ++; curQ < QS.length ? renderQ() : showResult(); }, 950);
+}
+function showResult() {
+  const pct = (score / QS.length) * 100;
+  let lv, path, col;
+  if(pct >= 80)      { lv = 'Advanced';     path = 'Olympiad Training or Topic Exploration'; col = 'var(--honey)'; }
+  else if(pct >= 50) { lv = 'Intermediate'; path = 'School Syllabus or Topic Exploration';   col = 'var(--blue)';  }
+  else               { lv = 'Beginner';     path = 'From the Beginning';                     col = 'var(--green)'; }
+
+  document.getElementById('assessModal').innerHTML = `
+    <button class="mclose" onclick="closeModal('assess')">✕</button>
+    <div style="text-align:center;padding:1.5rem 0">
+      <div style="font-size:48px;margin-bottom:1.2rem">🎯</div>
+      <div style="font-family:'Cormorant',serif;font-size:1.7rem;font-weight:400;color:var(--cream);margin-bottom:.5rem">Assessment Complete</div>
+      <div style="font-family:'Cormorant',serif;font-size:3.2rem;font-weight:300;color:${col}">${score} out of ${QS.length}</div>
+      <div style="font-family:'Fira Code',monospace;font-size:10px;color:var(--stone);margin:.4rem 0 1.5rem;letter-spacing:1px">
+        LEVEL DETECTED &nbsp; <span style="color:${col}">${lv.toUpperCase()}</span>
+      </div>
+      <p style="color:var(--stone);font-size:14px;font-weight:300;margin-bottom:2rem;line-height:1.8">
+        Lemma recommends<br/>
+        <strong style="color:var(--cream)">${path}</strong>
+      </p>
+      <button class="fbtn" onclick="closeModal('assess');openModal('auth')">Create Your Free Account</button>
+      <p style="margin-top:1rem;font-family:'Fira Code',monospace;font-size:10px;color:var(--fog);letter-spacing:.5px">Your entire path is built around this result</p>
+    </div>
+  `;
+}
+
+/* ─────────────────────────────────────────
+   TEACHER REQUEST ACTIONS
+───────────────────────────────────────── */
+function acceptReq(btn) {
+  const card = btn.closest('.req-card');
+  card.style.borderColor = 'var(--green)';
+  card.style.background  = 'rgba(76,175,130,0.04)';
+  card.querySelector('.req-actions').innerHTML =
+    '<span style="font-family:\'Fira Code\',monospace;font-size:11px;color:var(--green)">✓ Accepted</span>';
+}
+function declineReq(btn) {
+  const card = btn.closest('.req-card');
+  card.style.opacity = '.4';
+  card.querySelector('.req-actions').innerHTML =
+    '<span style="font-family:\'Fira Code\',monospace;font-size:11px;color:var(--red)">Declined</span>';
+}
+
+/* ─────────────────────────────────────────
+   HEATMAP
+───────────────────────────────────────── */
+function buildHeatmap() {
+  const el = document.getElementById('heatmap');
+  if(!el || el.children.length > 0) return;
+  const pattern = [0,1,0,2,3,4,3,2,1,0,2,3,4,4,3,2,1,0,1,3,4,3,2,1,0,1,2,3,4,4];
+  const lvls = ['','l1','l2','l3','l4'];
+  pattern.forEach(v => {
+    const d = document.createElement('div');
+    d.className = 'hm-day' + (v > 0 ? ' ' + lvls[v] : '');
+    el.appendChild(d);
+  });
+}
+
+/* ─────────────────────────────────────────
+   EARNINGS CHART
+───────────────────────────────────────── */
+function buildEarnChart() {
+  const chart  = document.getElementById('earnChart');
+  const labels = document.getElementById('earnLabels');
+  if(!chart || chart.children.length > 0) return;
+  const months = ['Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
+  const vals   = [3200, 4100, 3800, 5200, 6100, 5900, 7300, 8240];
+  const max    = Math.max(...vals);
+  months.forEach((m,i) => {
+    const bar = document.createElement('div');
+    bar.className = 'earn-bar';
+    bar.style.height = Math.round((vals[i]/max)*90)+'px';
+    chart.appendChild(bar);
+    const lbl = document.createElement('div');
+    lbl.className = 'earn-lbl';
+    lbl.textContent = m;
+    labels.appendChild(lbl);
+  });
+}
+
+/* ─────────────────────────────────────────
+   CALENDAR
+───────────────────────────────────────── */
+function buildCalendar() {
+  const grid = document.getElementById('calGrid');
+  if(!grid || grid.children.length > 0) return;
+  const days  = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+  const dates = [24,25,26,27,28,29,30];
+  const events= [0,2,4];
+  days.forEach((d,i) => {
+    const cell = document.createElement('div');
+    cell.className = 'cal-day' + (i===6?' today':'') + (events.includes(i)?' has-event':'');
+    cell.innerHTML = `<div class="cal-day-name">${d}</div><div class="cal-day-n">${dates[i]}</div>${events.includes(i)?'<div class="event-dot"></div>':''}`;
+    grid.appendChild(cell);
+  });
+}
+
+/* Init */
+buildHeatmap();
+</script>
+</body>
+</html>
